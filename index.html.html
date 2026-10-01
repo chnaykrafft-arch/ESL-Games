@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade 1 ESL Fun Race - Colors & Toys</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif']
+                    },
+                    colors: {
+                        teamRed: '#EF4444',
+                        teamBlue: '#3B82F6'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Fredoka', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Cheerful background animation */
+        .bg-pattern {
+            background-color: #0f172a;
+            background-image: radial-gradient(#1e293b 2px, transparent 2px);
+            background-size: 24px 24px;
+        }
+
+        /* Option Card Hover Effects */
+        .option-card {
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+        }
+        .option-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.5);
+        }
+        .option-card:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        /* Track texture pattern */
+        .track-bg {
+            background-color: #1e293b;
+            background-image: linear-gradient(90deg, #334155 1px, transparent 1px);
+            background-size: 20px 100%;
+        }
+
+        .checkered-flag {
+            background-size: 16px 16px;
+            background-image: 
+                linear-gradient(45deg, #000 25%, transparent 25%), 
+                linear-gradient(-45deg, #000 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #000 75%), 
+                linear-gradient(-45deg, transparent 75%, #000 75%);
+            background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+        }
+
+        .car-transition {
+            transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Floating confetti effect */
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(3deg); }
+        }
+        .animate-bounce-gentle {
+            animation: floatSlow 2.5s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-pattern text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+    <!-- Top Bar Header -->
+    <header class="bg-slate-900 border-b border-slate-800 px-4 py-3 shadow-2xl relative z-20">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <div class="bg-gradient-to-tr from-amber-400 to-orange-500 p-2.5 rounded-2xl shadow-lg shadow-amber-500/20 text-slate-950 font-black text-2xl">
+                    ✏️
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-fredoka text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-400 to-orange-400 tracking-wide">
+                            WHAT COLOR IS IT?
+                        </h1>
+                        <span class="bg-amber-400/20 text-amber-300 border border-amber-400/40 text-xs font-bold px-2.5 py-0.5 rounded-full">GRADE 1 ESL</span>
+                    </div>
+                    <p class="text-xs text-slate-400">Colors, Classroom Items & Toys Challenge!</p>
+                </div>
+            </div>
+
+            <!-- Participation Rule Banner -->
+            <div class="bg-slate-800/90 border border-amber-400/30 rounded-2xl px-4 py-1.5 flex items-center gap-3 shadow-inner">
+                <div class="relative flex h-3 w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-amber-400"></span>
+                </div>
+                <div class="text-xs md:text-sm">
+                    <span class="text-slate-400 font-semibold uppercase tracking-wider block text-[9px]">Classroom Rule</span>
+                    <span class="font-bold text-amber-300">Think ➔ Discuss ➔ Decide Together!</span>
+                </div>
+            </div>
+
+            <!-- Audio & Sound FX Toggle Buttons -->
+            <div class="flex items-center gap-2">
+                <button id="bgmToggleBtn" onclick="toggleBGM()" class="bg-slate-800 hover:bg-slate-700 text-amber-300 px-3 py-2 rounded-xl border border-slate-700 text-xs font-bold flex items-center gap-1.5 transition">
+                    <span id="bgmIcon">🎵</span> <span id="bgmStatus">Music: OFF</span>
+                </button>
+                <button id="sfxToggleBtn" onclick="toggleSFX()" class="bg-slate-800 hover:bg-slate-700 text-emerald-300 px-3 py-2 rounded-xl border border-slate-700 text-xs font-bold flex items-center gap-1.5 transition">
+                    <span id="sfxIcon">🔊</span> <span>Sound FX: ON</span>
+                </button>
+                <button onclick="toggleFullscreen()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2.5 rounded-xl border border-slate-700 transition" title="Toggle Fullscreen">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Classroom Arena -->
+    <main class="max-w-7xl w-full mx-auto p-3 sm:p-5 flex-1 flex flex-col gap-4">
+
+        <!-- Race Track Arena Header -->
+        <section class="bg-slate-900 border-2 border-slate-800 rounded-3xl p-4 shadow-2xl relative overflow-hidden">
+            <div class="flex justify-between items-center mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="font-fredoka text-sm font-bold uppercase tracking-wider text-slate-400">🏁 Team Race Track</span>
+                    <span id="questionNumBadge" class="bg-amber-400/20 text-amber-300 border border-amber-400/30 text-xs px-2.5 py-0.5 rounded-full font-bold">
+                        Question 1 / 8
+                    </span>
+                </div>
+                <div id="turnIndicator" class="px-4 py-1.5 rounded-full text-xs sm:text-sm font-extrabold uppercase tracking-wider animate-pulse border">
+                    Initializing Turn...
+                </div>
+            </div>
+
+            <!-- Two Team Race Lanes -->
+            <div class="track-bg rounded-2xl border border-slate-700/80 p-3 relative flex flex-col gap-3 shadow-inner">
+                <!-- Checkered Finish Line -->
+                <div class="absolute right-6 top-0 bottom-0 w-8 checkered-flag opacity-50 border-l border-r border-amber-400/50 z-0"></div>
+
+                <!-- Team 1 Lane (Red) -->
+                <div class="relative bg-slate-900/90 rounded-xl p-2.5 border border-red-500/40 flex items-center z-10">
+                    <div class="w-24 sm:w-28 flex-shrink-0 font-bold text-xs sm:text-sm text-red-400 flex items-center gap-2">
+                        <span class="w-4 h-4 rounded-full bg-red-500 inline-block shadow-md shadow-red-500/50"></span>
+                        TEAM 1
+                    </div>
+                    <div class="relative flex-1 h-10 bg-slate-950/80 rounded-lg border border-slate-800 overflow-hidden mx-2">
+                        <div id="carTeam1" class="car-transition absolute top-1/2 -translate-y-1/2 left-[2%] flex items-center gap-1 z-20">
+                            <!-- SVG Red Car Icon -->
+                            <svg class="w-10 h-7 drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]" viewBox="0 0 100 50">
+                                <path d="M 10 30 Q 25 15 45 15 L 75 15 Q 90 20 95 30 L 98 38 Q 98 42 90 42 L 10 42 Z" fill="#ef4444" />
+                                <path d="M 35 17 L 55 17 L 65 28 L 30 28 Z" fill="#991b1b" />
+                                <circle cx="25" cy="42" r="9" fill="#1e293b" stroke="#f87171" stroke-width="2"/>
+                                <circle cx="78" cy="42" r="9" fill="#1e293b" stroke="#f87171" stroke-width="2"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div id="scoreTeam1" class="font-fredoka font-black text-xl sm:text-2xl text-red-400 w-16 text-right">0 PTS</div>
+                </div>
+
+                <!-- Team 2 Lane (Blue) -->
+                <div class="relative bg-slate-900/90 rounded-xl p-2.5 border border-blue-500/40 flex items-center z-10">
+                    <div class="w-24 sm:w-28 flex-shrink-0 font-bold text-xs sm:text-sm text-blue-400 flex items-center gap-2">
+                        <span class="w-4 h-4 rounded-full bg-blue-500 inline-block shadow-md shadow-blue-500/50"></span>
+                        TEAM 2
+                    </div>
+                    <div class="relative flex-1 h-10 bg-slate-950/80 rounded-lg border border-slate-800 overflow-hidden mx-2">
+                        <div id="carTeam2" class="car-transition absolute top-1/2 -translate-y-1/2 left-[2%] flex items-center gap-1 z-20">
+                            <!-- SVG Blue Car Icon -->
+                            <svg class="w-10 h-7 drop-shadow-[0_0_8px_rgba(59,130,246,0.8)]" viewBox="0 0 100 50">
+                                <path d="M 10 30 Q 25 15 45 15 L 75 15 Q 90 20 95 30 L 98 38 Q 98 42 90 42 L 10 42 Z" fill="#3b82f6" />
+                                <path d="M 35 17 L 55 17 L 65 28 L 30 28 Z" fill="#1e40af" />
+                                <circle cx="25" cy="42" r="9" fill="#1e293b" stroke="#60a5fa" stroke-width="2"/>
+                                <circle cx="78" cy="42" r="9" fill="#1e293b" stroke="#60a5fa" stroke-width="2"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div id="scoreTeam2" class="font-fredoka font-black text-xl sm:text-2xl text-blue-400 w-16 text-right">0 PTS</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Question & Answer Area -->
+        <section class="bg-slate-900 border-2 border-slate-800 rounded-3xl p-4 sm:p-6 shadow-2xl flex flex-col gap-6 flex-1 relative">
+            
+            <!-- Question Banner Header -->
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 text-center relative overflow-hidden shadow-inner">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-slate-400 text-xs uppercase font-bold tracking-wider">Question Prompt:</span>
+                    <!-- Classroom Timer -->
+                    <div class="flex items-center gap-2 bg-slate-900 border border-slate-700 px-3 py-1 rounded-full">
+                        <span class="text-amber-400 font-bold text-xs uppercase">⏱️ Time:</span>
+                        <span id="timerDisplay" class="font-mono text-lg font-black text-amber-300 min-w-[32px]">30s</span>
+                    </div>
+                </div>
+
+                <h2 id="questionPromptTitle" class="text-2xl sm:text-4xl font-extrabold text-amber-300 tracking-wide mt-1">
+                    What color is it?
+                </h2>
+                <p id="questionPromptSubtitle" class="text-xl sm:text-3xl font-bold text-white mt-1">
+                    It's <span id="targetColorHighlight" class="text-blue-400 underline decoration-wavy">blue</span>.
+                </p>
+            </div>
+
+            <!-- 4 Options Grid (A, B, C, D) -->
+            <div id="optionsGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 my-auto">
+                <!-- Option items dynamically inserted via JS -->
+            </div>
+
+            <!-- Answer Banner Feedback -->
+            <div id="answerFeedbackBox" class="hidden bg-emerald-950/90 border-2 border-emerald-500 rounded-2xl p-3 text-center">
+                <p id="answerFeedbackText" class="text-lg sm:text-xl font-bold text-emerald-300"></p>
+            </div>
+        </section>
+
+        <!-- Teacher Controls Bar -->
+        <footer class="bg-slate-900 border border-slate-800 rounded-2xl p-3 sm:p-4 shadow-2xl">
+            <div class="flex flex-wrap justify-between items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <span class="bg-amber-400 text-slate-950 text-xs font-black px-2.5 py-1 rounded-lg font-fredoka uppercase">
+                        TEACHER DASHBOARD
+                    </span>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <button id="pauseTimerBtn" onclick="toggleTimer()" class="bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-400/30 text-xs font-bold px-3 py-2 rounded-xl transition flex items-center gap-1">
+                        ⏱️ <span id="timerBtnLabel">Pause Timer</span>
+                    </button>
+
+                    <button onclick="revealAnswer()" class="bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-indigo-400/30 text-xs font-bold px-3 py-2 rounded-xl transition flex items-center gap-1">
+                        💡 Show Answer
+                    </button>
+
+                    <button onclick="nextQuestion()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-extrabold px-4 py-2 rounded-xl transition shadow flex items-center gap-1">
+                        Next Question ➔
+                    </button>
+
+                    <button onclick="switchTurn()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-bold px-3 py-2 rounded-xl transition">
+                        🔄 Switch Team Turn
+                    </button>
+
+                    <button onclick="openEditorModal()" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-400/30 text-xs font-bold px-3 py-2 rounded-xl transition">
+                        ✏️ Custom Questions
+                    </button>
+
+                    <button onclick="resetGame()" class="bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800 text-xs font-bold px-3 py-2 rounded-xl transition">
+                        💥 Reset Race
+                    </button>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Custom Question Editor Modal -->
+    <div id="editorModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-xl w-full p-6 shadow-2xl flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="font-fredoka font-bold text-xl text-amber-300 flex items-center gap-2">
+                    ✏️ Edit Questions for Grade 1 ESL
+                </h3>
+                <button onclick="closeEditorModal()" class="text-slate-400 hover:text-white font-bold p-1 text-2xl">&times;</button>
+            </div>
+
+            <p class="text-xs text-slate-400">
+                You can select active items from the question pool or restart the preset lesson list anytime!
+            </p>
+
+            <div class="space-y-3">
+                <button onclick="loadDefaultQuestions(); closeEditorModal(); resetGame();" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs transition">
+                    Reload Preset Grade 1 Lesson (Colors & Toys)
+                </button>
+            </div>
+
+            <div class="flex justify-end pt-3 border-t border-slate-800">
+                <button onclick="closeEditorModal()" class="px-5 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Banner Overlay -->
+    <div id="feedbackModal" class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div id="feedbackCard" class="bg-slate-900 border-4 rounded-3xl max-w-md w-full p-6 text-center shadow-2xl flex flex-col items-center gap-4 transform transition-all">
+            <div id="feedbackIcon" class="text-6xl animate-bounce-gentle"></div>
+            <h3 id="feedbackTitle" class="font-fredoka text-3xl font-extrabold"></h3>
+            <p id="feedbackBody" class="text-base text-slate-200"></p>
+            <button onclick="closeFeedbackModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-100 font-extrabold px-8 py-3 rounded-2xl text-sm border border-slate-700 transition">
+                Continue Race ➔
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Preset Question Dataset with high-quality inline SVG renderings for Grade 1 items
+        const defaultQuestionBank = [
+            {
+                id: 1,
+                promptTitle: "What color is it?",
+                promptSub: "It's <span class='text-blue-400 underline decoration-wavy'>blue</span>.",
+                correctIndex: 2, // 'C'
+                options: [
+                    { label: "A", name: "Red Book", color: "red", svg: `<svg class="w-20 h-20" viewBox="0 0 100 100"><rect x="20" y="20" width="60" height="60" rx="6" fill="#ef4444"/><rect x="25" y="25" width="50" height="50" rx="3" fill="#fca5a5"/><line x1="20" y1="20" x2="20" y2="80" stroke="#991b1b" stroke-width="6"/></svg>` },
+                    { label: "B", name: "Green Chair", color: "green", svg: `<svg class="w-20 h-20" viewBox="0 0 100 100"><path d="M 30 20 L 70 20 Q 75 20 75 25 L 75 55 L 25 55 L 25 25 Q 25 20 30 20 Z" fill="#22c55e"/><rect x="25" y="55" width="50" height="10" fill="#15803d"/><rect x="30" y="65" width="8" height="25" fill="#15803d"/><rect x="62" y="65" width="8" height="25" fill="#15803d"/></svg>` },
+                    { label: "C", name: "Blue Crayon", color: "blue", svg: `<svg class="w-20 h-20" viewBox="0 0 100 100"><polygon points="20,80 30,90 85,35 75,25" fill="#3b82f6"/><polygon points="15,75 20,80 30,90 25,95" fill="#1d4ed8"/><rect x="40" y="35" width="20" height="40" transform="rotate(-45 50 50)" fill="#93c5fd"/></svg>` },
+                    { label: "D", name: "Yellow Desk", color: "yellow", svg: `<svg class="w-20 h-20" viewBox="0 0 100 100"><rect x="15" y="30" width="70" height="20" rx="4" fill="#eab308"/><rect x="20" y="50" width="10" height="35" fill="#ca8a04"/><rect x="70" y="50" width="10" height="35" fill="#ca8a04"/><rect x="25" y="50" width="50" height="20" fill="#fef08a"/></svg>` }
+                ]
+            },
+            {
+                id: 2,
+                promptTitle: "What toy is it?",
+                promptSub: "It's a <span class='text-red-400 underline decoration-wavy'>red car</span>.",
+                correctIndex: 0, // 'A'
+                options: [
+                    { label: "A", name: "Red Car", color: "red", svg: `<svg class="w-20 h-20" viewBox="0 0 100 100"><path d="M 15 50 Q 30 25 55 25 L 80 25 Q 90 35 95 50 L 95 65 L 10 65 Z" fill="#ef4444"/><circle cx="30" cy="65" r="10" fill="#1e293b" stroke="#94a3b8" stroke-width="3"/><circle cx="75" cy="65" r="10" fill="#1e293b" stroke="#94a3b8" stroke-width="3"/></svg>` },
+                    { label: "B", name: "Yellow Ball", color: "yellow", svg: `<svg class="w-20 h-20" viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="#eab308"/><path d="M 25 35 Q 50 60 75 35" fill="none" stroke="#fef08a" stroke-width="6"/><path d="M 25 65 Q 50 40 75 65" fill="none" stroke="#ca8a04" stroke-width="6"/></svg>` },
+                    { label: "C", name: "Blue Robot", color: "blue", svg: `<svg class="w-20 h-20" viewBox="0 0 100 100"><rect x="30" y="20" width="40" height="30" rx="5" fill="#3b82f6"/><rect x="25" y="55" width="50" height="35" rx="5" fill="#1d4ed8"/><circle cx="42" cy="32" r="5" fill="#fef08a"/><circle cx="58" cy="32" r="5" fill="#fef08a"/></svg>` },
+                    { label: "D", name: "Green Kite", color: "green", svg: `<svg class="w-20 h-20" viewBox="0 0 100 100"><polygon points="50,15 80,50 50,85 20,50" fill="#22c55e"/><line x1="50" y1="15" x2="50" y2="85" stroke="#15803d" stroke-width="3"/><line x1="20" y1="50" x2="80" y2="50" stroke="#15803d" stroke-width="3"/></svg>` }
+                ]
+            },
+            {
+                id: 3,
+                promptTitle: "What color is it?",
+                promptSub: "It's <span class='text-yellow-400 underline decoration-wavy'>yellow</span>.",
+                correctIndex: 1, // 'B'
+                options: [
+                    { label: "A", name: "Purple Robot", color: "purple", svg: `<svg class="w-20 h-20" viewBox="0 0 100 100"><rect x="30" y="20" width="40" height="30" rx="5" fill="#a855f7"/><rect x="25" y="55" width="50" height="35" rx="5" fill="#7e22ce"/><circle cx="42" cy="32" r="5" fill="#38bdf8"/><circle cx="58" cy="32" r="5" fill="#38bdf8"/></svg>` },
+                    { label: "B", name: "Yellow Teddy Bear", color: "yellow", svg: `<svg class="w-20 h-20" viewBox="0 0 100 100"><circle cx="30" cy="25" r="12" fill="#eab308"/><circle cx="70" cy="25" r="12" fill="#eab308"/><circle cx="50" cy="45" r="25" fill="#eab308"/><circle cx="50" cy="75" r="22" fill="#ca8a04"/><circle cx="42" cy="40" r="3" fill="#000"/><circle cx="58" cy="40" r="3" fill="#000"/></svg>` },
+                    { label: "C", name: "Red Pencil", color: "red", svg: `<svg class="w-20 h-20" viewBox="0 0 100 100"><polygon points="20,80 30,90 85,35 75,25" fill="#ef4444"/><polygon points="15,75 20,80 30,90 25,95" fill="#991b1b"/></svg>` },
+                    { label: "D", name: "Blue Chair", color: "blue", svg: `<svg class="w-20 h-20" viewBox="0 0 100 100"><path d="M 30 20 L 70 20 Q 75 20 75 25 L 75 55 L 25 55 L 25 25 Q 25 20 30 20 Z" fill="#3b82f6"/><rect x="25" y="55" width="50" height="10" fill="#1d4ed8"/></svg>` }
+                ]
+            },
+            {
+                id: 4,
+                promptTitle: "What is it?",
+                promptSub: "It's a <span class='text-emerald-400 underline decoration-wavy'>green book</span>.",
+                correctIndex: 3, // 'D'
+                options: [
+                    { label: "A", name: "Blue Doll", color: "blue", svg: `<svg class="w-20 h-20" viewBox="0 0 100 100"><circle cx="50" cy="30" r="16" fill="#fde047"/><path d="M 30 50 L 70 50 L 80 85 L 20 85 Z" fill="#3b82f6"/></svg>` },
+                    { label: "B", name: "Red Train", color: "red", svg: `<svg class="w-20 h-20" viewBox="0 0 100 100"><rect x="20" y="35" width="55" height="30" fill="#ef4444"/><rect x="55" y="20" width="20" height="45" fill="#b91c1c"/><circle cx="30" cy="70" r="8" fill="#334155"/><circle cx="65" cy="70" r="8" fill="#334155"/></svg>` },
+                    { label: "C", name: "Yellow Crayon", color: "yellow", svg: `<svg class="w-20 h-20" viewBox="0 0 100 100"><polygon points="20,80 30,90 85,35 75,25" fill="#eab308"/></svg>` },
+                    { label: "D", name: "Green Book", color: "green", svg: `<svg class="w-20 h-20" viewBox="0 0 100 100"><rect x="20" y="20" width="60" height="60" rx="6" fill="#22c55e"/><rect x="25" y="25" width="50" height="50" rx="3" fill="#86efac"/><line x1="20" y1="20" x2="20" y2="80" stroke="#15803d" stroke-width="6"/></svg>` }
+                ]
+            }
+        ];
+
+        // State Variables
+        let questions = [];
+        let currentQuestionIdx = 0;
+        let currentTurn = 'team1'; // 'team1' or 'team2'
+        let scoreTeam1 = 0;
+        let scoreTeam2 = 0;
+
+        let timerSeconds = 30;
+        let timerInterval = null;
+        let isTimerRunning = false;
+
+        // Audio Engine Variables
+        let audioCtx = null;
+        let bgmEnabled = false;
+        let sfxEnabled = true;
+        let bgmOscillator = null;
+        let bgmInterval = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) {
+                    audioCtx = new AudioContext();
+                }
+            }
+        }
+
+        // Synthesizer for Cheer Crowd & Boo/Oh No sounds
+        function playSFX(type) {
+            if (!sfxEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
+
+            try {
+                const now = audioCtx.currentTime;
+
+                if (type === 'correct') {
+                    // CROWD CELEBRATION CHEER SYNTHESIS
+                    // 1. Major chord fanfare
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'triangle';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                        gain.gain.setValueAtTime(0.15, now + idx * 0.08);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6 + idx * 0.08);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + idx * 0.08);
+                        osc.stop(now + 0.7 + idx * 0.08);
+                    });
+
+                    // 2. Crowd Cheering noise burst (filtered noise simulating excited applause)
+                    const bufferSize = audioCtx.sampleRate * 0.8;
+                    const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                    const output = noiseBuffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        output[i] = Math.random() * 2 - 1;
+                    }
+
+                    const whiteNoise = audioCtx.createBufferSource();
+                    whiteNoise.buffer = noiseBuffer;
+
+                    const filter = audioCtx.createBiquadFilter();
+                    filter.type = 'bandpass';
+                    filter.frequency.setValueAtTime(1200, now);
+                    filter.Q.setValueAtTime(2, now);
+
+                    const noiseGain = audioCtx.createGain();
+                    noiseGain.gain.setValueAtTime(0.01, now);
+                    noiseGain.gain.linearRampToValueAtTime(0.25, now + 0.2);
+                    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+
+                    whiteNoise.connect(filter);
+                    filter.connect(noiseGain);
+                    noiseGain.connect(audioCtx.destination);
+
+                    whiteNoise.start(now);
+                    whiteNoise.stop(now + 0.8);
+
+                } else if (type === 'wrong') {
+                    // "BOOOH / OH NO" SLIDING THUD EFFECT
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+
+                    osc.type = 'sawtooth';
+                    // Pitch slides down like a funny disappointment whistle
+                    osc.frequency.setValueAtTime(280, now);
+                    osc.frequency.exponentialRampToValueAtTime(80, now + 0.6);
+
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.6);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc.start(now);
+                    osc.stop(now + 0.6);
+
+                    // Secondary thud
+                    const thud = audioCtx.createOscillator();
+                    const thudGain = audioCtx.createGain();
+                    thud.type = 'sine';
+                    thud.frequency.setValueAtTime(120, now + 0.1);
+                    thud.frequency.exponentialRampToValueAtTime(40, now + 0.5);
+                    thudGain.gain.setValueAtTime(0.25, now + 0.1);
+                    thudGain.gain.linearRampToValueAtTime(0.01, now + 0.5);
+
+                    thud.connect(thudGain);
+                    thudGain.connect(audioCtx.destination);
+                    thud.start(now + 0.1);
+                    thud.stop(now + 0.5);
+
+                } else if (type === 'click') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.05);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                }
+            } catch(e) {
+                console.log("Audio playback suppressed:", e);
+            }
+        }
+
+        // Classroom background musical tune synthesizer
+        function toggleBGM() {
+            bgmEnabled = !bgmEnabled;
+            const statusEl = document.getElementById('bgmStatus');
+            
+            if (bgmEnabled) {
+                statusEl.innerText = "Music: ON";
+                startBGM();
+            } else {
+                statusEl.innerText = "Music: OFF";
+                stopBGM();
+            }
+        }
+
+        function toggleSFX() {
+            sfxEnabled = !sfxEnabled;
+            const btn = document.getElementById('sfxToggleBtn');
+            btn.innerHTML = sfxEnabled ? `<span>🔊</span> <span>Sound FX: ON</span>` : `<span>🔇</span> <span>Sound FX: OFF</span>`;
+        }
+
+        function startBGM() {
+            initAudio();
+            if (!audioCtx) return;
+            stopBGM();
+
+            const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 392.00, 329.63];
+            let noteIdx = 0;
+
+            bgmInterval = setInterval(() => {
+                if (!bgmEnabled) return;
+                try {
+                    const now = audioCtx.currentTime;
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(notes[noteIdx], now);
+
+                    gain.gain.setValueAtTime(0.03, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+
+                    noteIdx = (noteIdx + 1) % notes.length;
+                } catch(e) {}
+            }, 300);
+        }
+
+        function stopBGM() {
+            if (bgmInterval) {
+                clearInterval(bgmInterval);
+                bgmInterval = null;
+            }
+        }
+
+        window.onload = function() {
+            loadDefaultQuestions();
+            resetGame();
+        };
+
+        function loadDefaultQuestions() {
+            questions = JSON.parse(JSON.stringify(defaultQuestionBank));
+        }
+
+        function resetGame() {
+            scoreTeam1 = 0;
+            scoreTeam2 = 0;
+            currentQuestionIdx = 0;
+            currentTurn = 'team1';
+            updateScoreboard();
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            stopTimer();
+            document.getElementById('answerFeedbackBox').classList.add('hidden');
+
+            if (currentQuestionIdx >= questions.length) {
+                currentQuestionIdx = 0; // Cycle back
+            }
+
+            const q = questions[currentQuestionIdx];
+            document.getElementById('questionPromptTitle').innerText = q.promptTitle;
+            document.getElementById('questionPromptSubtitle').innerHTML = q.promptSub;
+            document.getElementById('questionNumBadge').innerText = `Question ${currentQuestionIdx + 1} / ${questions.length}`;
+
+            // Update Turn Indicator Header
+            const turnIndicator = document.getElementById('turnIndicator');
+            if (currentTurn === 'team1') {
+                turnIndicator.className = "px-4 py-1.5 rounded-full text-xs sm:text-sm font-extrabold uppercase tracking-wider bg-red-500/20 text-red-400 border border-red-500/40 animate-pulse";
+                turnIndicator.innerText = "🚩 TEAM 1 (RED) TURN";
+            } else {
+                turnIndicator.className = "px-4 py-1.5 rounded-full text-xs sm:text-sm font-extrabold uppercase tracking-wider bg-blue-500/20 text-blue-400 border border-blue-500/40 animate-pulse";
+                turnIndicator.innerText = "🔵 TEAM 2 (BLUE) TURN";
+            }
+
+            // Render Options
+            const grid = document.getElementById('optionsGrid');
+            grid.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const card = document.createElement('div');
+                card.className = `option-card bg-slate-950 border-2 border-slate-800 hover:border-amber-400 rounded-3xl p-4 flex flex-col items-center justify-between text-center relative shadow-lg group`;
+                card.onclick = () => selectOption(idx);
+
+                card.innerHTML = `
+                    <div class="absolute top-3 left-3 bg-amber-400 text-slate-950 font-black text-sm px-2.5 py-1 rounded-xl shadow">
+                        ${opt.label}
+                    </div>
+                    <div class="my-4 flex items-center justify-center h-28 transform group-hover:scale-110 transition-transform">
+                        ${opt.svg}
+                    </div>
+                    <div class="text-slate-300 font-bold text-sm sm:text-base mt-2">
+                        Option ${opt.label}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            resetTimer(30);
+            startTimer();
+        }
+
+        function selectOption(selectedIndex) {
+            playSFX('click');
+            stopTimer();
+
+            const q = questions[currentQuestionIdx];
+            const isCorrect = selectedIndex === q.correctIndex;
+
+            if (isCorrect) {
+                playSFX('correct'); // Crowd celebration cheer sound
+                
+                if (currentTurn === 'team1') {
+                    scoreTeam1 += 10;
+                } else {
+                    scoreTeam2 += 10;
+                }
+                updateScoreboard();
+
+                showFeedbackModal(
+                    '🎉 CHEERS! CORRECT! 🎉', 
+                    `Awesome job Team ${currentTurn === 'team1' ? '1 (Red)' : '2 (Blue)'}! You earned +10 points!`, 
+                    'emerald'
+                );
+
+                // Auto switch team turn for next question
+                switchTurnState();
+
+            } else {
+                playSFX('wrong'); // Boooh / Oh No sound effect
+
+                showFeedbackModal(
+                    '😮 OH NO! TRY AGAIN!', 
+                    `That's not quite right! Talk together with your team and try another answer.`, 
+                    'rose'
+                );
+            }
+        }
+
+        function updateScoreboard() {
+            document.getElementById('scoreTeam1').innerText = `${scoreTeam1} PTS`;
+            document.getElementById('scoreTeam2').innerText = `${scoreTeam2} PTS`;
+
+            // Progress percentage across race track
+            const maxGoal = 40;
+            const pct1 = Math.min(92, Math.max(2, (scoreTeam1 / maxGoal) * 88 + 2));
+            const pct2 = Math.min(92, Math.max(2, (scoreTeam2 / maxGoal) * 88 + 2));
+
+            document.getElementById('carTeam1').style.left = `${pct1}%`;
+            document.getElementById('carTeam2').style.left = `${pct2}%`;
+
+            if (scoreTeam1 >= maxGoal || scoreTeam2 >= maxGoal) {
+                const winner = scoreTeam1 >= maxGoal ? 'TEAM 1 (RED)' : 'TEAM 2 (BLUE)';
+                showFeedbackModal(
+                    '🏆 WINNER OF THE RACE! 🏆', 
+                    `Congratulations! ${winner} crossed the finish line first! Great teamwork!`, 
+                    'amber'
+                );
+            }
+        }
+
+        function switchTurnState() {
+            currentTurn = currentTurn === 'team1' ? 'team2' : 'team1';
+        }
+
+        function switchTurn() {
+            switchTurnState();
+            loadQuestion();
+        }
+
+        function nextQuestion() {
+            currentQuestionIdx++;
+            loadQuestion();
+        }
+
+        function revealAnswer() {
+            const q = questions[currentQuestionIdx];
+            const correctOpt = q.options[q.correctIndex];
+            const feedbackBox = document.getElementById('answerFeedbackBox');
+            const feedbackText = document.getElementById('answerFeedbackText');
+
+            feedbackText.innerText = `💡 Correct Answer: Option ${correctOpt.label} (${correctOpt.name})`;
+            feedbackBox.classList.remove('hidden');
+            playSFX('click');
+        }
+
+        function startTimer() {
+            if (isTimerRunning) return;
+            isTimerRunning = true;
+            document.getElementById('timerBtnLabel').innerText = "Pause Timer";
+
+            timerInterval = setInterval(() => {
+                timerSeconds--;
+                document.getElementById('timerDisplay').innerText = `${timerSeconds}s`;
+
+                if (timerSeconds <= 0) {
+                    stopTimer();
+                    playSFX('wrong');
+                    showFeedbackModal(
+                        '⏱️ TIME IS UP!', 
+                        `Time ran out! Let's review the answer together as a class.`, 
+                        'amber'
+                    );
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('timerBtnLabel').innerText = "Resume Timer";
+        }
+
+        function resetTimer(sec = 30) {
+            stopTimer();
+            timerSeconds = sec;
+            document.getElementById('timerDisplay').innerText = `${timerSeconds}s`;
+        }
+
+        function toggleTimer() {
+            if (isTimerRunning) {
+                stopTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function openEditorModal() {
+            stopTimer();
+            document.getElementById('editorModal').classList.remove('hidden');
+        }
+
+        function closeEditorModal() {
+            document.getElementById('editorModal').classList.add('hidden');
+        }
+
+        function showFeedbackModal(title, body, theme) {
+            const modal = document.getElementById('feedbackModal');
+            const card = document.getElementById('feedbackCard');
+            const icon = document.getElementById('feedbackIcon');
+            const titleEl = document.getElementById('feedbackTitle');
+            const bodyEl = document.getElementById('feedbackBody');
+
+            titleEl.innerText = title;
+            bodyEl.innerText = body;
+
+            if (theme === 'emerald') {
+                card.className = "bg-slate-900 border-4 border-emerald-500 rounded-3xl max-w-md w-full p-6 text-center shadow-2xl flex flex-col items-center gap-4";
+                icon.innerText = "🙌🥳";
+            } else if (theme === 'rose') {
+                card.className = "bg-slate-900 border-4 border-rose-500 rounded-3xl max-w-md w-full p-6 text-center shadow-2xl flex flex-col items-center gap-4";
+                icon.innerText = "😮💨";
+            } else {
+                card.className = "bg-slate-900 border-4 border-amber-400 rounded-3xl max-w-md w-full p-6 text-center shadow-2xl flex flex-col items-center gap-4";
+                icon.innerText = "🏁⭐";
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeFeedbackModal() {
+            document.getElementById('feedbackModal').classList.add('hidden');
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log("Fullscreen request suppressed: ", err);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
